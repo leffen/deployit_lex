@@ -10,7 +10,7 @@ import (
 )
 
 // VERSION of the application
-const VERSION = "0.1.2"
+const VERSION = "0.1.3"
 
 var (
 	// CommitHash is the revision hash of the build's git repository
@@ -29,7 +29,7 @@ func Handler(ctx context.Context, event events.LexEvent) (*events.LexResponse, e
 
 	fmt.Printf("Received an input from Amazon Lex. Current Intent: %s json: %s", event.CurrentIntent.Name, string(bs))
 
-	if event.CurrentIntent.Name != "DeployIt" {
+	if event.CurrentIntent.Name != "Deployit" {
 		return &events.LexResponse{}, fmt.Errorf("Unsupported intent %s", event.CurrentIntent.Name)
 	}
 
