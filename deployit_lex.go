@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/sanity-io/litter"
 )
 
 // VERSION of the application
-const VERSION = "0.1.1"
+const VERSION = "0.1.2"
 
 var (
 	// CommitHash is the revision hash of the build's git repository
@@ -21,10 +21,29 @@ var (
 
 // Handler handles lex events
 func Handler(ctx context.Context, event events.LexEvent) (*events.LexResponse, error) {
-	fmt.Printf("Received an input from Amazon Lex. Current Intent: %s", event.CurrentIntent.Name)
-	litter.Dump(event)
 
-	messageContent := "Hello from AWS Lambda!"
+	bs, err := json.Marshal(event)
+	if err != nil {
+		return &events.LexResponse{}, err
+	}
+
+	fmt.Printf("Received an input from Amazon Lex. Current Intent: %s json: %s", event.CurrentIntent.Name, string(bs))
+
+	if event.CurrentIntent.Name != "DeployIt" {
+		return &events.LexResponse{}, fmt.Errorf("Unsupported intent %s", event.CurrentIntent.Name)
+	}
+
+	project := ""
+	for _, s := range event.CurrentIntent.Slots {
+		fmt.Printf("slot: %v", s)
+	}
+
+	err = deployIt(project, "tester")
+	if err != nil {
+		return &events.LexResponse{}, err
+	}
+
+	messageContent := "Deployment of " + project + " started"
 
 	return &events.LexResponse{
 		SessionAttributes: event.SessionAttributes,
