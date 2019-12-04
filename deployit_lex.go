@@ -10,7 +10,7 @@ import (
 )
 
 // VERSION of the application
-const VERSION = "0.1.3"
+const VERSION = "0.1.4"
 
 var (
 	// CommitHash is the revision hash of the build's git repository
