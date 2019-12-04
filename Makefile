@@ -17,13 +17,13 @@ ifneq ($(GitDirty),)
 	GitCommit:= $(GitCommit)-dirty
 endif
 
-SOURCES=$(APP).go
+SOURCES=$(APP).go ops.go
 
 all: build
 .PHONY: build
 
 bump:
-	bump_version patch app.go
+	bump_version patch deployit_lex.go
 
 clean:
 	rm -rf bin/*
@@ -31,7 +31,7 @@ clean:
 compile: test clean
 	$(GOBUILDFLAGS) go build -ldflags "-s -X main.CommitHash=$(GitCommit) -X main.BuildTime=$(BuildTime)"  -o bin/$(APP) .
 
-release: bump compile
+release: test bump compile
 	serverless deploy
 
 test: vet
