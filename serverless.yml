@@ -1,0 +1,16 @@
+service: deployit_lex
+provider:
+  name: aws
+  runtime: go1.x
+package:
+ exclude:
+   - ./**
+ include:
+   - ./bin/**
+functions:
+  deployit_lex:
+    handler: bin/deployit_lex
+    events:
+      - http:
+          path: /
+          method: get
