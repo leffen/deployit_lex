@@ -1,27 +1,31 @@
 package main
+
 import (
-    "context"
-    "encoding/json"
-    "log"
-    "time"
-    "github.com/aws/aws-lambda-go/events"
-    "github.com/aws/aws-lambda-go/lambda"
+	"context"
+	"fmt"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
-type response struct {
-    UTC time.Time `json:"utc"`
-}
-func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-    now := time.Now()
-    resp := &response{
-        UTC: now.UTC(),
-    }
-    body, err := json.Marshal(resp)
-    if err != nil {
-        return events.APIGatewayProxyResponse{}, err
-    }
-    return events.APIGatewayProxyResponse{Body: string(body), StatusCode: 200}, nil
-}
-func main() {
-    lambda.Start(handleRequest)
+
+func Handler(ctx context.Context, event events.LexEvent) (*events.LexResponse, error) {
+	fmt.Printf("Received an input from Amazon Lex. Current Intent: %s", event.CurrentIntent.Name)
+
+	messageContent := "Hello from AWS Lambda!"
+
+	return &events.LexResponse{
+		SessionAttributes: event.SessionAttributes,
+		DialogAction: events.LexDialogAction{
+			Type: "Close",
+			Message: map[string]string{
+				"content":     messageContent,
+				"contentType": "PlainText",
+			},
+			FulfillmentState: "Fulfilled",
+		},
+	}, nil
 }
 
+func main() {
+	lambda.Start(Handler)
+}

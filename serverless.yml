@@ -1,7 +1,9 @@
-service: deployit_lex
+service: deployit001
 provider:
   name: aws
   runtime: go1.x
+  stage: prod
+  region: eu-west-1
 package:
  exclude:
    - ./**
